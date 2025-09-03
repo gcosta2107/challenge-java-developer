@@ -1,8 +1,11 @@
 package br.com.neurotech.challenge.controller;
 
 import br.com.neurotech.challenge.dto.CreditEvaluationResponseDto;
+import br.com.neurotech.challenge.dto.HatchEligibleResponseDto;
+import br.com.neurotech.challenge.entity.CreditType;
 import br.com.neurotech.challenge.entity.NeurotechClient;
 import br.com.neurotech.challenge.entity.VehicleModel;
+import br.com.neurotech.challenge.repository.ClientRepository;
 import br.com.neurotech.challenge.service.ClientService;
 import br.com.neurotech.challenge.service.CreditService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,6 +28,7 @@ public class ClientController {
 
     private final ClientService service;
     private final CreditService creditService;
+    private final ClientRepository clientRepository;
 
     @Operation(
             summary = "Cadastrar cliente",
@@ -69,4 +74,22 @@ public class ClientController {
         return ResponseEntity.ok(resp);
     }
 
+    @Operation(
+            summary = "Lista clientes elegíveis para Hatch e Juros Fixo",
+            description = "Retorna uma lista de clientes entre 23 e 49 anos que possuem crédito com juros fixos e estão aptos a adquirirem crédito automotivo para veículos do tipo Hatch."
+    )
+    @GetMapping("/eligible/hatch-fixed")
+    public ResponseEntity<List<HatchEligibleResponseDto>> listEligibleHatchFixed() {
+
+        List<NeurotechClient> candidates = clientRepository.findByAgeBetween(23, 49);
+
+        List<HatchEligibleResponseDto> result = candidates.stream()
+                .filter(c -> creditService.classifyCredit(c.getId())
+                        .orElse(null) == CreditType.JUROS_FIXOS)
+                .filter(c -> creditService.checkCredit(c.getId(), VehicleModel.HATCH))
+                .map(c -> new HatchEligibleResponseDto(c.getName(), c.getIncome()))
+                .toList();
+
+        return ResponseEntity.ok(result);
+    }
 }
