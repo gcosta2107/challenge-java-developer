@@ -1,3 +1,130 @@
+### Sumário:
+
+* [Tecnologias](#tecnologias)
+* [Ferramentas utilizadas](#ferramentas-utilizadas)
+* [Execução do projeto](#execu%C3%A7%C3%A3o-do-projeto)
+  * [01 - Execução geral via docker-compose](#01---execu%C3%A7%C3%A3o-geral-via-docker-compose)
+* [Acessando a aplicação](#acessando-a-aplica%C3%A7%C3%A3o)
+* [Dados da API](#dados-da-api)
+
+## Tecnologias
+
+* **Java 21**
+* **Spring Boot 3.2.4**
+* **API REST**
+* **PostgreSQL**
+* **Dockerfile**
+* **docker-compose**
+* **Swagger UI**
+
+## Ferramentas utilizadas
+
+* **IntelliJ IDEA Community Edition**
+* **Docker**
+* **Maven**
+
+## Execução do projeto
+
+Há várias maneiras de executar os projetos:
+
+1. Executando tudo via `docker-compose`
+
+Para rodar as aplicações, será necessário ter instalado:
+
+* **Docker**
+* **Java 21**
+* **Maven**
+
+### 01 - Execução geral via docker-compose
+
+Executar o comando no diretório raiz do repositório:
+
+`docker-compose up --build`
+
+Para parar todos os containers, basta rodar:
+
+`docker-compose down` 
+
+## Acessando a aplicação
+
+A aplicação executará nas seguintes portas:
+
+* Aplicação Principal: 5000
+* PostgreSQL (DB): 5432
+  
+Para acessar a documentação, basta acessar a URL:
+
+http://localhost:5000/swagger-ui/index.html
+
+## Dados da API
+
+###  Endpoint para Cadastrar Cliente
+
+**POST** http://localhost:5000/api/client
+
+Payload de entrada:
+
+```json
+{
+    "name": "String",
+    "age": (int),
+    "income":(Double)
+}
+```
+
+### Endpoint para buscar cliente por Id
+
+**GET** http://localhost:5000/api/client/{id}
+
+Resposta:
+
+```json
+{
+    "id": UUID,
+    "name": "String",
+    "age": (int),
+    "income":(Double)
+}
+```
+
+### Endpoint para verificar crédito do cliente para um modelo de veículo
+
+**GET** http://localhost:5000/api/client/{id}/credit/{modelo}
+
+Resposta:
+
+```json
+{
+    "clientId": UUID,
+    "vehicleModel": vehicleModel,
+    "eligibleForVehicle": boolean,
+    "creditType": crediType
+}
+```
+
+### Endpoint para verificar lista clientes elegíveis para Hatch e Juros Fixo
+
+**GET** http://localhost:5000/api/client/eligible/hatch-fixed
+
+Resposta:
+
+```json
+[
+    {
+        "name": "String",
+        "income": (Double)
+    },
+    {
+        "name": "String",
+        "income": (Double)
+    }
+]
+```
+
+## Testes
+
+Os testes podem ser executados a partir da execução da classe ClientControllerTest
+
 # Avaliação para admissão de Desenvolvedores para a Neurotech
 
 ## Instruções
